@@ -47,33 +47,33 @@ Console.WriteLine(@"
 An minimalistic alternative to EGL for all Fortnite players.
 ");
 
-Console.WriteLine("Open auth page? (Y/N):");
+Console.Write("Open auth page? (Y/N): ");
 
-string authOpenYN = Console.ReadLine();
 
-if (authOpenYN == "y")
+if (Console.ReadKey().Key == ConsoleKey.Y)
 {
-    var psi = new ProcessStartInfo
+    var getAuthCode = new ProcessStartInfo
     {
         FileName = "https://www.epicgames.com/id/api/redirect?clientId=34a02cf8f4414e29b15921876da36f9a&responseType=code",
         UseShellExecute = true
     };
-    Process.Start(psi);
-}
-if (authOpenYN == "Y")
-{
-    var psi = new ProcessStartInfo
-    {
-        FileName = "https://www.epicgames.com/id/api/redirect?clientId=34a02cf8f4414e29b15921876da36f9a&responseType=code",
-        UseShellExecute = true
-    };
-    Process.Start(psi);
+    Process.Start(getAuthCode);
+
 }
 
-Console.WriteLine("\nPlease enter your auth code:");
+Console.WriteLine("\n\nPlease enter your auth code: ");
 string authCode = Console.ReadLine();
 
-// get auth token
+
+if(String.IsNullOrEmpty(authCode))
+{
+    Console.WriteLine("No auth code provided, please try again.");
+    Console.WriteLine("Press any key to exit...");
+    Console.ReadKey();
+    return;
+}
+
+// Get auth token
 var authClient = new RestClient("https://account-public-service-prod.ol.epicgames.com/account/api/oauth/token");
 var authRequest = new RestRequest(Method.POST);
 authRequest.AddHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -82,45 +82,39 @@ authRequest.AddParameter("grant_type", "authorization_code");
 authRequest.AddParameter("code", authCode);
 IRestResponse authResponse = authClient.Execute(authRequest);
 
+
 var authObj = JsonConvert.DeserializeObject<dynamic>(authResponse.Content);
 
-//Console.WriteLine(authObj);
-
-// get exchange code
+// Get exchange code
 var exchangeClient = new RestClient("https://account-public-service-prod.ol.epicgames.com/account/api/oauth/exchange");
 var exchangeRequest = new RestRequest(Method.GET);
-exchangeRequest.AddHeader("Authorization", "Bearer " + authObj.access_token);
+exchangeRequest.AddHeader("Authorization", "Bearer " + authObj?.access_token);
 IRestResponse exchangeResponse = exchangeClient.Execute(exchangeRequest);
 
 var exchangeObj = JsonConvert.DeserializeObject<dynamic>(exchangeResponse.Content);
 
-//Console.WriteLine("\n" + exchangeObj);
-
-// launch fn
-ProcessStartInfo startInfo = new ProcessStartInfo();
-startInfo.CreateNoWindow = true;
-startInfo.UseShellExecute = true;
-startInfo.WorkingDirectory = ShadyLauncher.FortniteUtil.FortniteUtils.BinariesPath;
-startInfo.FileName = "FortniteLauncher.exe";
-startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+// Launch Fortnite
+ProcessStartInfo gameInfo = new ProcessStartInfo();
+gameInfo.CreateNoWindow = true;
+gameInfo.UseShellExecute = true;
+gameInfo.WorkingDirectory = ShadyLauncher.FortniteUtil.FortniteUtils.BinariesPath;
+gameInfo.FileName = "FortniteLauncher.exe";
+gameInfo.WindowStyle = ProcessWindowStyle.Hidden;
 
 // Epic Servers
-startInfo.Arguments = $"-AUTH_LOGIN=unused -AUTH_PASSWORD={exchangeObj.code} -AUTH_TYPE=exchangecode -epicapp=Fortnite -epicenv=Prod -EpicPortal -epicuserid={authObj.account_id}";
+gameInfo.Arguments = $"-AUTH_LOGIN=unused -AUTH_PASSWORD={exchangeObj?.code} -AUTH_TYPE=exchangecode -epicapp=Fortnite -epicenv=Prod -EpicPortal -epicuserid={authObj?.account_id}";
 
 // World Cup Servers
-//startInfo.Arguments = $"-epicapp=FortniteEvents -skippatchcheck -useallavailablecores -AUTH_LOGIN=unused -AUTH_PASSWORD={exchangeCode} -AUTH_TYPE=exchangecode -epicenv=Prod -EpicPortal -epicuserid={userID} -fromfl=be -fltoken=7d05d6869798a086b4bb6222";
+//gameInfo.Arguments = $"-epicapp=FortniteEvents -skippatchcheck -useallavailablecores -AUTH_LOGIN=unused -AUTH_PASSWORD={exchangeCode} -AUTH_TYPE=exchangecode -epicenv=Prod -EpicPortal -epicuserid={userID} -fromfl=be -fltoken=7d05d6869798a086b4bb6222";
+
 try
 {
-    using (Process exeProcess = Process.Start(startInfo))
+    using (Process gameProcess = Process.Start(gameInfo))
     {
-        exeProcess.WaitForExit();
+        gameProcess?.WaitForExit();
     }
 }
-catch
+catch (Exception ex)
 {
-
+    Console.WriteLine("Oh no, something went wrong. " + ex.ToString());
 }
-
-//ShadyLauncher.LaunchUtil.LauncherBase.Launch();
-
-//Console.WriteLine(ShadyLauncher.FortniteUtil.FortniteUtils.BinariesPath);
