@@ -5,10 +5,9 @@
 
 ### Features
 - Launch Fortnite without EGL.
-- Authentication with exchange codes.
+- Login using API auth codes.
 
 ### Planned Features
 - Saving logins.
-- Automatic exchange code generation from authentication token.
 - Multiple version support.
 - Custom backend support.
