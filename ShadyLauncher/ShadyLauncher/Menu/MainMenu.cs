@@ -74,20 +74,11 @@ namespace ShadyLauncher.Menu
             ");
 
             Console.WriteLine(@"
-                        Please enter your auth code below. (Any entered text will be invisible):");
+                Please enter your auth code below and press enter. (Any entered text will be invisible):");
 
             Console.CursorVisible = false;
 
             string authCode = HideText();
-
-
-            if (String.IsNullOrEmpty(authCode))
-            {
-                Console.WriteLine("No auth code provided, please try again.");
-                Console.WriteLine("Press any key to exit...");
-                Console.ReadKey();
-                return;
-            }
 
             Console.Clear();
 
