@@ -34,87 +34,33 @@ Python guy, and Python doesn't use classes lol.)
 
 */
 
+Console.SetWindowSize(120, 30);
+
+Console.CursorVisible = false;
+
 Console.Title = "Exchanger | Created by shady#9999";
 
 Console.WriteLine(@"
-███████╗██╗  ██╗ ██████╗██╗  ██╗ █████╗ ███╗   ██╗ ██████╗ ███████╗██████╗ 
-██╔════╝╚██╗██╔╝██╔════╝██║  ██║██╔══██╗████╗  ██║██╔════╝ ██╔════╝██╔══██╗
-█████╗   ╚███╔╝ ██║     ███████║███████║██╔██╗ ██║██║  ███╗█████╗  ██████╔╝
-██╔══╝   ██╔██╗ ██║     ██╔══██║██╔══██║██║╚██╗██║██║   ██║██╔══╝  ██╔══██╗
-███████╗██╔╝ ██╗╚██████╗██║  ██║██║  ██║██║ ╚████║╚██████╔╝███████╗██║  ██║
-╚══════╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝
+
+
+
+   
+
+
+
+
+
+                       ███████╗██╗  ██╗ ██████╗██╗  ██╗ █████╗ ███╗   ██╗ ██████╗ ███████╗██████╗ 
+                       ██╔════╝╚██╗██╔╝██╔════╝██║  ██║██╔══██╗████╗  ██║██╔════╝ ██╔════╝██╔══██╗
+                       █████╗   ╚███╔╝ ██║     ███████║███████║██╔██╗ ██║██║  ███╗█████╗  ██████╔╝
+                       ██╔══╝   ██╔██╗ ██║     ██╔══██║██╔══██║██║╚██╗██║██║   ██║██╔══╝  ██╔══██╗
+                       ███████╗██╔╝ ██╗╚██████╗██║  ██║██║  ██║██║ ╚████║╚██████╔╝███████╗██║  ██║
+                       ╚══════╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝
                                                                            
-An minimalistic alternative to EGL for all Fortnite players.
+                             An minimalistic alternative to EGL for all Fortnite players.
 ");
 
-Console.Write("Open auth page? (Y/N): ");
+System.Threading.Thread.Sleep(2000);
 
+ShadyLauncher.Menu.MainMenu.LoginMenu();
 
-if (Console.ReadKey().Key == ConsoleKey.Y)
-{
-    var getAuthCode = new ProcessStartInfo
-    {
-        FileName = "https://www.epicgames.com/id/api/redirect?clientId=34a02cf8f4414e29b15921876da36f9a&responseType=code",
-        UseShellExecute = true
-    };
-    Process.Start(getAuthCode);
-
-}
-
-Console.WriteLine("\n\nPlease enter your auth code: ");
-string authCode = Console.ReadLine();
-
-
-if(String.IsNullOrEmpty(authCode))
-{
-    Console.WriteLine("No auth code provided, please try again.");
-    Console.WriteLine("Press any key to exit...");
-    Console.ReadKey();
-    return;
-}
-
-// Get auth token
-var authClient = new RestClient("https://account-public-service-prod.ol.epicgames.com/account/api/oauth/token");
-var authRequest = new RestRequest(Method.POST);
-authRequest.AddHeader("Content-Type", "application/x-www-form-urlencoded");
-authRequest.AddHeader("Authorization", "Basic MzRhMDJjZjhmNDQxNGUyOWIxNTkyMTg3NmRhMzZmOWE6ZGFhZmJjY2M3Mzc3NDUwMzlkZmZlNTNkOTRmYzc2Y2Y=");
-authRequest.AddParameter("grant_type", "authorization_code");
-authRequest.AddParameter("code", authCode);
-IRestResponse authResponse = authClient.Execute(authRequest);
-
-
-var authObj = JsonConvert.DeserializeObject<dynamic>(authResponse.Content);
-
-// Get exchange code
-var exchangeClient = new RestClient("https://account-public-service-prod.ol.epicgames.com/account/api/oauth/exchange");
-var exchangeRequest = new RestRequest(Method.GET);
-exchangeRequest.AddHeader("Authorization", "Bearer " + authObj?.access_token);
-IRestResponse exchangeResponse = exchangeClient.Execute(exchangeRequest);
-
-var exchangeObj = JsonConvert.DeserializeObject<dynamic>(exchangeResponse.Content);
-
-// Launch Fortnite
-ProcessStartInfo gameInfo = new ProcessStartInfo();
-gameInfo.CreateNoWindow = true;
-gameInfo.UseShellExecute = true;
-gameInfo.WorkingDirectory = ShadyLauncher.FortniteUtil.FortniteUtils.BinariesPath;
-gameInfo.FileName = "FortniteLauncher.exe";
-gameInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
-// Epic Servers
-gameInfo.Arguments = $"-AUTH_LOGIN=unused -AUTH_PASSWORD={exchangeObj?.code} -AUTH_TYPE=exchangecode -epicapp=Fortnite -epicenv=Prod -EpicPortal -epicuserid={authObj?.account_id}";
-
-// World Cup Servers
-//gameInfo.Arguments = $"-epicapp=FortniteEvents -skippatchcheck -useallavailablecores -AUTH_LOGIN=unused -AUTH_PASSWORD={exchangeCode} -AUTH_TYPE=exchangecode -epicenv=Prod -EpicPortal -epicuserid={userID} -fromfl=be -fltoken=7d05d6869798a086b4bb6222";
-
-try
-{
-    using (Process gameProcess = Process.Start(gameInfo))
-    {
-        gameProcess?.WaitForExit();
-    }
-}
-catch (Exception ex)
-{
-    Console.WriteLine("Oh no, something went wrong. " + ex.ToString());
-}
