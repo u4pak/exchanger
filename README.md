@@ -1,7 +1,6 @@
-<h1 align ="center" style="margin-top: 0px;">Exchanger</h1>
-<p align="center">
-  A minimalistic launcher that lets you login to Fortnite using an exchange code.
-</p>
+<h1 align ="center" style="margin-top: 0px;">
+  <img alt="Deploy to Heroku" src="https://user-images.githubusercontent.com/71219957/160217433-8f5bb5cc-5bd0-45a1-bfbd-d03c2681328d.png"></a>
+</h1>
 
 ### Features
 - Launch Fortnite without EGL.
