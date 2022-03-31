@@ -10,6 +10,10 @@ using System.Diagnostics;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using RestSharp;
+using System.Configuration;
+using System.Collections.Specialized;
+using System.IO;
+using System.Collections;
 
 /*
 
@@ -36,9 +40,12 @@ Python guy, and Python doesn't use classes lol.)
 
 Console.SetWindowSize(120, 30);
 
+
 Console.CursorVisible = false;
 
 Console.Title = "Exchanger | Created by shady#9999";
+
+ShadyLauncher.FileManager.ConfigManager.CheckConfig();
 
 Console.WriteLine(@"
 
@@ -56,11 +63,11 @@ Console.WriteLine(@"
                        ██╔══╝   ██╔██╗ ██║     ██╔══██║██╔══██║██║╚██╗██║██║   ██║██╔══╝  ██╔══██╗
                        ███████╗██╔╝ ██╗╚██████╗██║  ██║██║  ██║██║ ╚████║╚██████╔╝███████╗██║  ██║
                        ╚══════╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝
-                                                                           
+                                                                          
                              An minimalistic alternative to EGL for all Fortnite players.
 ");
 
 System.Threading.Thread.Sleep(2000);
 
-ShadyLauncher.Menu.MainMenu.LoginMenu();
+ShadyLauncher.Menu.MainMenu.FirstMenu();
 
